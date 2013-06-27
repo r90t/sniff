@@ -1,0 +1,23 @@
+# this is config file for conference polling
+
+interfaces_to_check: 'wlan eth' 
+interfaces_tp_check_qty: 10
+
+
+log4r_config:
+  # define all loggers ...
+  loggers:
+    - name      : 'Sniffer'
+      level     : DEBUG
+      trace     : 'false'
+      outputters:
+        - stdout
+
+  # define all outputters (incl. formatters)      
+  outputters:
+    - type     : StdoutOutputter
+      name     : stdout
+      formatter:
+        date_pattern: '%Y-%m-%d %H:%M:%S'
+        pattern     : "[%l] - %d - %C - %m"
+        type        : PatternFormatter
