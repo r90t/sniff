@@ -135,11 +135,15 @@ module Helper
     def self.input_body(pkt, keywords = nil)
       result = nil
       result = pkt.payload.scan(/(user(?:name)|login|e(?:mail)|p(?:ass(?:word|wd|)|w|wd))[\s:=]\s?([^\&\s]*)/i)
-     # unless keywords.nil?
-        #result << pkt.payload.scan(keywords)
-     #   binding.pry
-     # end
+      unless keywords.nil?
+        result << pkt.payload.scan(keywords)
+      end
       result
+    end
+
+    def self.dns_resolver(payload)
+      dns = payload.scan(/(\s(\w{2,}[\.]\w{2,}(?:[\.](?:\D{2,}(?:[\D])))))+$/)
+      dns = dns.empty? ? nil : dns[0][0].gsub!(/[^a-zA-Z\.]/, '')
     end
   end
 end
