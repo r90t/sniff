@@ -31,14 +31,16 @@ module SnifferMain
 
   keywords = Helper::ChoseKeywords.chose_keywords_to_sniff
 
-  if false #keywords.size > 1
-    res = ''
-    keywords.each { |k| res += "#{k}|" }
-    keywords = res[0..-2]
-  elsif false#keywords.size == 1
-    "/#{keyword}/"
-  else
-    keywords = nil
+  unless keywords.nil?
+    if keywords.size > 1
+      res = ''
+      keywords.each { |k| res += "#{k}|" }
+      keywords = res[0..-2]
+    elsif keywords.size == 1
+      "/#{keyword}/"
+    else
+      keywords = nil
+    end
   end
 
   cap = Sniffer.new chosen_interface
@@ -49,7 +51,8 @@ module SnifferMain
       pkt = PacketFu::Packet.parse p
       if !pkt.nil? && pkt.is_ip?
         payload_get = Helper::PayloadDataExtractor.input_body pkt, keywords
-        packet_info = [pkt.ip_saddr, pkt.ip_daddr, pkt.size, pkt.proto.last]
+        dns_daddr = Helper::PayloadDataExtractor.dns_resolver(pkt.payload)
+        packet_info = [pkt.ip_saddr, (dns_daddr.nil? ? pkt.ip_daddr : dns_daddr), pkt.size, pkt.proto.last]
         if payload_get.size > 0
           catched = "%-15s -> %-15s %-4d %s" % packet_info + ' >>>>>> ' + payload_get.inspect
           File.open('captured/catched.txt', 'a') { |file| file.write(catched+"\n") }
